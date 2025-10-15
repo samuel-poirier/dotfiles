@@ -30,13 +30,14 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 ### lazygit installation
 
-My Neovim config uses lazygit as it's default git tool. To insall, make sure you update your arch packages using:
+My Neovim config uses lazygit as it's default git tool. To install, make sure you update your arch packages using:
 
 ```bash
 sudo pacman -Sy
 ```
 
 Then install lazygit:
+
 ```bash
 sudo pacman -S lazygit
 ```
@@ -50,3 +51,9 @@ unzip ~/Downloads/JetBrainsMono.zip -d ~/.fonts
 fc-cache -f -v
 ```
 
+
+## C# Roslyn nvim LSP download source
+
+Look for "Microsoft.CodeAnalysis.LanguageServer.<platform>" on:
+
+https://dev.azure.com/azure-public/vside/_artifacts/feed/msft_consumption
