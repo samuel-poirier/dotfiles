@@ -12,9 +12,9 @@ vim.o.smartindent = true -- Automatically indent new lines
 vim.o.wrap = false -- Disable line wrapping
 vim.o.autoindent = true
 vim.o.swapfile = false
-
+vim.o.winborder = "rounded"
 vim.g.mapleader = " " -- Space as the leader key
-local map = vim.api.nvim_set_keymap
+local map = vim.keymap.set
 
 map("n", "<Leader>w", ":w<CR>", { noremap = true, silent = true, desc = "Save" })
 map("n", "<Leader>q", ":q!<CR>", { noremap = true, silent = true, desc = "Quit" })
@@ -71,7 +71,7 @@ opts.desc = "Restart LSP"
 map("n", "<leader>R", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
 
 opts.desc = "Go to declaration"
-vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts) -- go to declaration
+map("n", "gD", vim.lsp.buf.declaration, opts) -- go to declaration
 
 opts.desc = "Smart rename"
-vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, opts) -- smart rename
+map("n", "<leader>r", vim.lsp.buf.rename, opts) -- smart rename
