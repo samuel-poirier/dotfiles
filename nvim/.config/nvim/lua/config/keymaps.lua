@@ -52,6 +52,7 @@ local opts = { noremap = true, silent = true }
 opts.desc = "Show LSP references"
 map("n", "gu", "<cmd>Telescope lsp_references<CR>", opts) -- show definition, references
 map("n", "<Leader>fo", "<cmd>Telescope lsp_document_symbols<CR>", opts) -- show definition, references
+map("n", "<Leader>ft", "<cmd>Telescope lsp_workspace_symbols<CR>", opts) -- show definition, references
 
 opts.desc = "Show LSP definitions"
 map("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts) -- show lsp definitions
@@ -75,3 +76,12 @@ map("n", "gD", vim.lsp.buf.declaration, opts) -- go to declaration
 
 opts.desc = "Smart rename"
 map("n", "<leader>r", vim.lsp.buf.rename, opts) -- smart rename
+
+-- neotest keymap
+
+local neotest = require("neotest")
+
+opts.desc = "Run test file"
+map("n", "<Leader>tr", function()
+  neotest.run.run(vim.fn.expand("%"))
+end, opts)
