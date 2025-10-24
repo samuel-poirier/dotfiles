@@ -52,7 +52,7 @@ local opts = { noremap = true, silent = true }
 opts.desc = "Show LSP references"
 map("n", "gu", "<cmd>Telescope lsp_references<CR>", opts) -- show definition, references
 map("n", "<Leader>fo", "<cmd>Telescope lsp_document_symbols<CR>", opts) -- show definition, references
-map("n", "<Leader>ft", "<cmd>Telescope lsp_workspace_symbols<CR>", opts) -- show definition, references
+map("n", "<Leader>ft", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>", opts) -- show definition, references
 
 opts.desc = "Show LSP definitions"
 map("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts) -- show lsp definitions
