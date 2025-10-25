@@ -85,3 +85,15 @@ opts.desc = "Run test file"
 map("n", "<Leader>tr", function()
   neotest.run.run(vim.fn.expand("%"))
 end, opts)
+
+local cmp = require("cmp")
+
+cmp.mapping({
+  -- Other settings...
+  mapping = cmp.mapping.preset.insert({
+    -- Accept the currently selected suggestion with Tab
+    ["<Tab>"] = cmp.mapping.confirm({ select = true }),
+    -- Use Ctrl-Space to trigger completion
+    ["<C-Space>"] = cmp.mapping.complete(),
+  }),
+})
