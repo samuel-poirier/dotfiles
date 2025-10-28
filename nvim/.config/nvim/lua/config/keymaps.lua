@@ -68,9 +68,6 @@ opts.desc = "See available code actions"
 opts.desc = "Show buffer diagnostics"
 map("n", "<C-m>", "<cmd>Telescope diagnostics bufnr=0<CR>", opts) -- show  diagnostics for file
 
-opts.desc = "Restart LSP"
-map("n", "<leader>R", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
-
 opts.desc = "Go to declaration"
 map("n", "gD", vim.lsp.buf.declaration, opts) -- go to declaration
 
@@ -93,3 +90,11 @@ cmp.setup({
     ["<Tab>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item
   }),
 })
+
+-- Http client plugin
+local kulala = require("kulala")
+opts.desc = "Send HTTP Request"
+map("n", "<leader>Rs", kulala.run, opts)
+
+opts.desc = "Send All HTTP Request"
+map("n", "<leader>Ra", kulala.run_all, opts)
