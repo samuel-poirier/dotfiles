@@ -65,49 +65,49 @@ return {
       end
 
       -- go dap config
-      if LazyVim.has("dap-go.nvim") then
-        require("dap-go").setup({
-          -- Additional dap configurations can be added here.
-          -- dap_configurations accepts a list of tables where each entry
-          -- represents a dap configuration.
-          dap_configurations = {
-            {
-              type = "go", -- Must be "go" for this plugin
-              name = "Launch file",
-              request = "launch",
-              program = "${file}", -- Debug the current file
-            },
-            {
-              type = "go",
-              name = "Launch package",
-              request = "launch",
-              program = "${workspaceFolder}", -- Debug the entire package
-            },
-            {
-              type = "go",
-              name = "Attach remote",
-              mode = "remote",
-              request = "attach",
-              -- Add details like host and port for remote attachment
-              host = "127.0.0.1",
-              port = 2345,
-            },
-            {
-              type = "go",
-              name = "Debug tests",
-              request = "launch",
-              mode = "test",
-              program = "${file}", -- Debug tests in the current file
-            },
+      -- if LazyVim.has("dap-go.nvim") then
+      require("dap-go").setup({
+        -- Additional dap configurations can be added here.
+        -- dap_configurations accepts a list of tables where each entry
+        -- represents a dap configuration.
+        dap_configurations = {
+          {
+            type = "go", -- Must be "go" for this plugin
+            name = "Launch file",
+            request = "launch",
+            program = "${file}", -- Debug the current file
           },
-          -- Delve configurations (optional)
-          delve = {
-            path = "dlv", -- Path to the dlv executable (defaults to PATH)
-            initialize_timeout_sec = 20, -- Time to wait for Delve initialization
-            -- port = "${port}", -- Port for Delve (defaults to a random available port)
+          {
+            type = "go",
+            name = "Launch package",
+            request = "launch",
+            program = "${workspaceFolder}", -- Debug the entire package
           },
-        })
-      end
+          {
+            type = "go",
+            name = "Attach remote",
+            mode = "remote",
+            request = "attach",
+            -- Add details like host and port for remote attachment
+            host = "127.0.0.1",
+            port = 2345,
+          },
+          {
+            type = "go",
+            name = "Debug tests",
+            request = "launch",
+            mode = "test",
+            program = "${file}", -- Debug tests in the current file
+          },
+        },
+        -- Delve configurations (optional)
+        delve = {
+          path = "dlv", -- Path to the dlv executable (defaults to PATH)
+          initialize_timeout_sec = 20, -- Time to wait for Delve initialization
+          -- port = "${port}", -- Port for Delve (defaults to a random available port)
+        },
+      })
     end,
+    -- end,
   },
 }
