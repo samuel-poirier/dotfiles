@@ -22,7 +22,22 @@ alias v='nvim'
 alias t='tmux'
 alias k='kubectl'
 alias g='git'
+alias y='yazicwd'
 # Set default vagrant provider virtual box
 export VAGRANT_DEFAULT_PROVIDER=virtualbox
 
 [[ -s "/home/sampoi/.gvm/scripts/gvm" ]] && source "/home/sampoi/.gvm/scripts/gvm"
+
+export WATCHPACK_POLLING=true
+
+# Added by tally installer
+export PATH="$HOME/.tally/bin:$PATH"
+
+function yazicwd() {
+  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+  yazi "$@" --cwd-file="$tmp"
+  if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+    builtin cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
+}
