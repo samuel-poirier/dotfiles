@@ -5,4 +5,8 @@ visual-studio-code-bin \
 nodejs \
 dotnet-sdk \
 go \
-yazi
+yazi \
+networkmanager \
+networkmanager-openvpn \
+networkmanager-openconnect \
+nm-connection-editor
