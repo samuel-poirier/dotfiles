@@ -6,6 +6,7 @@ nodejs \
 dotnet-sdk \
 go \
 yazi \
+neovim \
 networkmanager \
 networkmanager-openvpn \
 networkmanager-openconnect \
