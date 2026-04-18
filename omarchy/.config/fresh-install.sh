@@ -5,6 +5,8 @@ visual-studio-code-bin \
 nodejs \
 dotnet-sdk \
 dotnet-sdk-8.0 \
+aspnet-runtime-3.1-bin \
+aspnet-runtime-8.0 \
 go \
 yazi \
 neovim \

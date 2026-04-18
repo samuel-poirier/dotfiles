@@ -5,6 +5,7 @@ export EDITOR="nvim"
 export SUDO_EDITOR="$EDITOR"
 
 export DOTNET_USE_POLLING_FILE_WATCHER=1
+export DOTNET_ROOT=$HOME/.dotnet/
 
 alias v='nvim'
 alias t='tmux'
@@ -13,6 +14,8 @@ alias g='git'
 alias y='yazicwd'
 
 export WATCHPACK_POLLING=true
+
+export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
 
 function yazicwd() {
   local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
