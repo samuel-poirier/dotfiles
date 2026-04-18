@@ -13,5 +13,6 @@ just \
 networkmanager-openvpn \
 networkmanager-openconnect \
 nm-connection-editor \
+network-manager-applet \
 libxml2 \
 libxml2-legacy
