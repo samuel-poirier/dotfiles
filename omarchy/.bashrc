@@ -20,6 +20,10 @@ export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=0
 export DOTNET_ICU_VERSION_OVERRIDE=78.2-1
 export CLR_ICU_VERSION_OVERRIDE=$DOTNET_ICU_VERSION_OVERRIDE
 
+if [ -d "$HOME/go/bin" ]; then
+  PATH=$PATH:$HOME/go/bin
+fi
+
 function yazicwd() {
   local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
   yazi "$@" --cwd-file="$tmp"
