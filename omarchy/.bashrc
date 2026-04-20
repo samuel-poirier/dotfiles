@@ -16,6 +16,9 @@ alias y='yazicwd'
 export WATCHPACK_POLLING=true
 
 export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=0
+# ICU value can be found with "pacman -Q icu"
+export DOTNET_ICU_VERSION_OVERRIDE=78.3-1
+export CLR_ICU_VERSION_OVERRIDE=$DOTNET_ICU_VERSION_OVERRIDE
 
 if [ -d "$HOME/go/bin" ]; then
   PATH=$PATH:$HOME/go/bin
