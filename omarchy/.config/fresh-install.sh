@@ -1,6 +1,7 @@
 yay -S google-chrome \
 xstow \
 hyprmon-bin \
+hyprmoncfg \
 visual-studio-code-bin \
 nodejs \
 dotnet-sdk \
