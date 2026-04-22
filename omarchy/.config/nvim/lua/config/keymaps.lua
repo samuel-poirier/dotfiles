@@ -103,6 +103,9 @@ map("n", "<C-m>", function()
   Snacks.picker.diagnostics({ filter = { cwd = true } })
 end, opts)
 
+opts.desc = "Smart rename"
+map("n", "<leader>r", vim.lsp.buf.rename, opts) -- smart rename
+
 ---
 
 -- { "gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition", has = "definition" },
@@ -116,29 +119,6 @@ end, opts)
 
 ---
 
--- opts.desc = "Show buffer diagnostics"
--- map("n", "<C-m>", "<cmd>Telescope diagnostics bufnr=0<CR>", opts) -- show  diagnostics for file
-
-opts.desc = "Smart rename"
-map("n", "<leader>r", vim.lsp.buf.rename, opts) -- smart rename
-
--- -- neotest keymap
---
--- local neotest = require("neotest")
---
--- opts.desc = "Run test file"
--- map("n", "<Leader>tr", function()
---   neotest.run.run(vim.fn.expand("%"))
--- end, opts)
---
--- local cmp = require("cmp")
---
--- cmp.setup({
---   mapping = cmp.mapping.preset.insert({
---     ["<Tab>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item
---   }),
--- })
---
 -- -- Http client plugin
 -- local kulala = require("kulala")
 -- opts.desc = "Send HTTP Request"
