@@ -44,6 +44,8 @@ map("i", "jj", "<Esc>", { noremap = true, silent = true, desc = "Escape insert m
 map("n", "<tab>", "<cmd>bnext<cr>", { noremap = true, silent = true, desc = "Next Buffer" })
 map("n", "<s-tab>", "<cmd>bprevious<cr>", { noremap = true, silent = true, desc = "Previous Buffer" })
 
+map("n", "<Leader>co", "<cmd>copen<cr>", { noremap = true, silent = true, desc = "Open Quickfix List" })
+
 -- LSP Keymaps
 
 local opts = { noremap = true, silent = true }
