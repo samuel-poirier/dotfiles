@@ -5,7 +5,7 @@ export EDITOR="nvim"
 export SUDO_EDITOR="$EDITOR"
 
 export DOTNET_USE_POLLING_FILE_WATCHER=1
-export DOTNET_ROOT=$HOME/.dotnet/
+export DOTNET_ROOT=/usr/share/dotnet/
 
 alias v='nvim'
 alias t='tmux'

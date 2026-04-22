@@ -96,6 +96,11 @@ map("n", "fs", function()
   Snacks.picker.grep({ cwd = vim.fn.getcwd() })
 end, opts)
 
+opts.desc = "Show buffer diagnostics"
+map("n", "<C-m>", function()
+  Snacks.picker.diagnostics({ filter = { cwd = true } })
+end, opts)
+
 ---
 
 -- { "gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition", has = "definition" },
