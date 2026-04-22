@@ -43,8 +43,6 @@ map("i", "jj", "<Esc>", { noremap = true, silent = true, desc = "Escape insert m
 
 map("n", "<tab>", "<cmd>bnext<cr>", { noremap = true, silent = true, desc = "Next Buffer" })
 map("n", "<s-tab>", "<cmd>bprevious<cr>", { noremap = true, silent = true, desc = "Previous Buffer" })
-map("n", "<leader>fs", "<cmd>Telescope live_grep<cr>", { desc = "Find string in cwd" })
-map("n", "<leader>fc", "<cmd>Telescope grep_string<cr>", { desc = "Find string under cursor in cwd" })
 
 -- LSP Keymaps
 
@@ -91,6 +89,11 @@ vim.keymap.del("n", "<leader>fF")
 opts.desc = "Find files (root)"
 map("n", "fF", function()
   Snacks.picker.files({ cwd = Snacks.git.get_root() })
+end, opts)
+
+opts.desc = "Grep (cwd)"
+map("n", "fs", function()
+  Snacks.picker.grep({ cwd = vim.fn.getcwd() })
 end, opts)
 
 ---
