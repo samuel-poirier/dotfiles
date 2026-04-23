@@ -81,6 +81,14 @@ map("n", "ft", function()
   Snacks.picker.lsp_workspace_symbols({ filter = LazyVim.config.kind_filter })
 end, opts)
 
+vim.keymap.del("n", "<leader>fT")
+opts.desc = "Workspace Class and Interface symbols"
+map("n", "fT", function()
+  Snacks.picker.lsp_workspace_symbols({
+    filter = { default = { "Class", "Interface" } },
+  })
+end, opts)
+
 vim.keymap.del("n", "<leader>ff")
 opts.desc = "Find files (cwd)"
 map("n", "ff", function()
