@@ -12,6 +12,8 @@ alias t='tmux'
 alias k='kubectl'
 alias g='git'
 alias y='yazicwd'
+alias i='tdl c'
+alias m='hyprmoncfg'
 
 export WATCHPACK_POLLING=true
 
