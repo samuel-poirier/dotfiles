@@ -14,6 +14,7 @@ alias g='git'
 alias y='yazicwd'
 alias i='tdl c'
 alias m='hyprmoncfg'
+alias sql='sqlit'
 
 export WATCHPACK_POLLING=true
 
@@ -34,3 +35,5 @@ function yazicwd() {
   fi
   rm -f -- "$tmp"
 }
+
+. "$HOME/.local/share/../bin/env"

@@ -128,9 +128,8 @@ map("n", "<leader>r", vim.lsp.buf.rename, opts) -- smart rename
 ---
 
 -- -- Http client plugin
--- local kulala = require("kulala")
--- opts.desc = "Send HTTP Request"
--- map("n", "<leader>Rs", kulala.run, opts)
---
--- opts.desc = "Send All HTTP Request"
--- map("n", "<leader>Ra", kulala.run_all, opts)
+local kulala = require("kulala")
+opts.desc = "Send HTTP Request"
+map("n", "<leader>Rs", kulala.run, opts)
+opts.desc = "Send All HTTP Request"
+map("n", "<leader>Ra", kulala.run_all, opts)
