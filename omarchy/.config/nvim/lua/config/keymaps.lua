@@ -112,7 +112,7 @@ map("n", "<C-m>", function()
 end, opts)
 
 opts.desc = "Smart rename"
-map("n", "<leader>r", vim.lsp.buf.rename, opts) -- smart rename
+map("n", "<leader>rr", vim.lsp.buf.rename, opts) -- smart rename
 
 ---
 
