@@ -8,6 +8,7 @@
 -- Application bindings
 --------------------------------
 
+hl.unbind("SUPER + Return")
 hl.bind(
 	"SUPER + Return",
 	hl.dsp.exec_cmd(
