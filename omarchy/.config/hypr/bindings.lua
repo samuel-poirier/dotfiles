@@ -122,11 +122,6 @@ local function switch_all(n)
 
 			hl.dispatch(hl.dsp.focus({ monitor = mon.name }))
 			hl.dispatch(hl.dsp.focus({ workspace = target, on_current_monitor = true }))
-			hl.notification.create({
-				text = "switch_all:" .. mon.name .. "->" .. target,
-				timeout = 3000, -- duration in ms (2 seconds)
-				icon = 5, -- optional icon code (e.g., 5 for OK)
-			})
 		end
 	end
 end
