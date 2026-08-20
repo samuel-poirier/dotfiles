@@ -9,6 +9,8 @@
 --------------------------------
 
 hl.unbind("SUPER + Return")
+hl.unbind("SUPER + SHIFT + S")
+
 hl.bind(
 	"SUPER + Return",
 	hl.dsp.exec_cmd(
@@ -78,10 +80,94 @@ hl.bind(
 -- Workspace switching / moving
 --------------------------------
 
-for i = 1, 10 do
-	local key = i % 10 -- 10 maps to key 0
-	hl.bind("SUPER + " .. key, hl.dsp.exec_cmd("~/.config/hypr/switch-workspace.sh " .. i))
-	hl.bind("SUPER + SHIFT + " .. key, hl.dsp.exec_cmd("~/.config/hypr/move-to-workspace.sh " .. i))
+-- Returns all connected monitors sorted left-to-right by position.
+-- Works regardless of monitor names/models, so it holds up across
+-- different setups (home vs office).
+
+local workspace_range = 10
+
+local function get_sorted_monitors()
+	local mons = hl.get_monitors()
+	table.sort(mons, function(a, b)
+		return a.x < b.x
+	end)
+	return mons
+end
+
+-- Assign workspace ranges: leftmost monitor gets 1-10, next gets 11-20, etc.
+local function assign_workspace_rules()
+	local mons = get_sorted_monitors()
+	for idx, mon in ipairs(mons) do
+		local base = (idx - 1) * workspace_range
+		for n = 1, workspace_range do
+			hl.workspace_rule({ workspace = tostring(base + n), monitor = mon.name })
+		end
+	end
+end
+
+assign_workspace_rules()
+
+-- Re-run whenever the monitor setup changes (docking, plugging in, etc.)
+hl.on("monitor.added", assign_workspace_rules)
+hl.on("monitor.removed", assign_workspace_rules)
+hl.on("monitor.layout_changed", assign_workspace_rules)
+
+-- Switch every monitor to its own "slot n" at once
+local function switch_all(n)
+	return function()
+		local mons = get_sorted_monitors()
+		for idx, mon in ipairs(mons) do
+			local base = (idx - 1) * workspace_range
+			local target = tostring(base + n)
+
+			hl.dispatch(hl.dsp.focus({ monitor = mon.name }))
+			hl.dispatch(hl.dsp.focus({ workspace = target, on_current_monitor = true }))
+			hl.notification.create({
+				text = "switch_all:" .. mon.name .. "->" .. target,
+				timeout = 3000, -- duration in ms (2 seconds)
+				icon = 5, -- optional icon code (e.g., 5 for OK)
+			})
+		end
+	end
+end
+
+local function move_and_switch_all(n)
+	return function()
+		local win = hl.get_active_window()
+
+		if win then
+			local mons = get_sorted_monitors()
+			local mon_idx = nil
+			for idx, mon in ipairs(mons) do
+				if mon.name == win.monitor.name then
+					mon_idx = idx
+					break
+				end
+			end
+
+			if mon_idx then
+				local base = (mon_idx - 1) * 10
+				local target = tostring(base + n)
+				hl.dispatch(hl.dsp.window.move({ workspace = target, follow = true }))
+			end
+		end
+
+		-- reuse the same sync logic so every other monitor flips too
+		switch_all(n)()
+	end
+end
+for n = 1, workspace_range do
+	local key = (n == 10) and "0" or tostring(n)
+
+	hl.unbind("SUPER+" .. key)
+	hl.unbind("SUPER+SHIFT+" .. key)
+
+	hl.bind("SUPER+" .. key, switch_all(n), { description = "Switch all monitors to slot " .. n })
+	hl.bind(
+		"SUPER+SHIFT+" .. key,
+		move_and_switch_all(n),
+		{ description = "Move window and switch all monitors to slot " .. n }
+	)
 end
 
 hl.unbind("MODIFIER + F9")
