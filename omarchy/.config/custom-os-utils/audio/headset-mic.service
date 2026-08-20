@@ -1,0 +1,12 @@
+[Unit]
+Description=Force headset mic port
+After=pipewire.service wireplumber.service
+PartOf=pipewire.service
+
+[Service]
+ExecStart=%h/.local/bin/headset-mic-watch.sh
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target

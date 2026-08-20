@@ -185,3 +185,10 @@ hl.bind("SUPER + CTRL + ALT + P", hl.dsp.exec_cmd([[hyprmoncfg apply "Laptop Onl
 hl.bind("SUPER + CTRL + ALT + 1", hl.dsp.exec_cmd([[hyprmoncfg apply "Laptop Only" --confirm-timeout 0]]))
 hl.bind("SUPER + CTRL + ALT + 2", hl.dsp.exec_cmd([[hyprmoncfg apply "Home Office" --confirm-timeout 0]]))
 hl.bind("SUPER + CTRL + ALT + 3", hl.dsp.exec_cmd([[hyprmoncfg apply "Office" --confirm-timeout 0]]))
+
+hl.config({
+	general = {
+		gaps_in = 1,
+		gaps_out = 1,
+	},
+})
