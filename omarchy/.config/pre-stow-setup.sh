@@ -1,4 +1,4 @@
-rm ~/.config/hypr/bindings.conf
-rm ~/.config/hypr/input.conf
+rm ~/.config/hypr/bindings.lua
+rm ~/.config/hypr/input.lua
 rm ~/.config/tmux/tmux.conf
 rm ~/.bashrc
