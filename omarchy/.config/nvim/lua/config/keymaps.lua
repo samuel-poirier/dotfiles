@@ -111,8 +111,216 @@ map("n", "<C-m>", function()
   Snacks.picker.diagnostics({ filter = { cwd = true } })
 end, opts)
 
-opts.desc = "Smart rename"
-map("n", "<leader>rr", vim.lsp.buf.rename, opts) -- smart rename
+-- Standard binding onlsp attach
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(event)
+    opts.desc = "Smart rename"
+    map("n", "<leader>rr", vim.lsp.buf.rename, opts) -- smart rename
+
+    -- Map <leader>ca in both Normal (n) and Visual (x) modes
+    map({ "n", "x" }, "<leader>ca", vim.lsp.buf.code_action, {
+      buffer = event.buf,
+      desc = "LSP: [C]ode [A]ction",
+    })
+
+    local dotnetModule = require("../utils/dotnet-module")
+
+    vim.keymap.set("n", "<Leader>dl", function()
+      local sln = dotnetModule.get_roslyn_sln()
+      vim.notify("Loaded solution: " .. sln, vim.log.levels.INFO)
+    end, { desc = "Show loaded solution" })
+
+    local dotnet_build_ns = vim.api.nvim_create_namespace("dotnet_build")
+
+    local spinner_frames = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
+
+    -- Keep a reference to the output buffer so we can reuse/update it
+    local build_output_bufnr = nil
+
+    local function get_or_create_output_buf()
+      if build_output_bufnr and vim.api.nvim_buf_is_valid(build_output_bufnr) then
+        return build_output_bufnr
+      end
+      local buf = vim.api.nvim_create_buf(false, true)
+      vim.bo[buf].buftype = "nofile"
+      vim.bo[buf].bufhidden = "hide"
+      vim.bo[buf].swapfile = false
+      vim.bo[buf].filetype = "dotnet-build-output"
+      build_output_bufnr = buf
+      return buf
+    end
+
+    local function set_output_lines(lines)
+      local buf = get_or_create_output_buf()
+      vim.bo[buf].modifiable = true
+      vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+      vim.bo[buf].modifiable = false
+    end
+
+    local function open_spinner_win(text)
+      local buf = vim.api.nvim_create_buf(false, true)
+      local width = #text + 4
+      local win = vim.api.nvim_open_win(buf, false, {
+        relative = "editor",
+        anchor = "SE",
+        row = vim.o.lines - 3,
+        col = vim.o.columns - 2,
+        width = width,
+        height = 1,
+        style = "minimal",
+        border = "rounded",
+        noautocmd = true,
+      })
+      vim.wo[win].winhl = "Normal:NormalFloat"
+      return buf, win
+    end
+
+    local function start_spinner(text)
+      local buf, win = open_spinner_win(text .. "  " .. spinner_frames[1])
+      local frame = 1
+
+      local timer = assert(vim.loop.new_timer())
+
+      timer:start(0, 80, function()
+        vim.schedule(function()
+          if not vim.api.nvim_buf_is_valid(buf) then
+            timer:stop()
+            timer:close()
+            return
+          end
+          frame = (frame % #spinner_frames) + 1
+          vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "  " .. text .. "  " .. spinner_frames[frame] })
+        end)
+      end)
+
+      return {
+        stop = function()
+          timer:stop()
+          timer:close()
+          if vim.api.nvim_win_is_valid(win) then
+            vim.api.nvim_win_close(win, true)
+          end
+          if vim.api.nvim_buf_is_valid(buf) then
+            vim.api.nvim_buf_delete(buf, { force = true })
+          end
+        end,
+      }
+    end
+
+    vim.keymap.set("n", "<Leader>db", function()
+      local sln = dotnetModule.get_roslyn_sln()
+      if not sln then
+        vim.notify("No solution loaded by roslyn_ls yet", vim.log.levels.WARN)
+        return
+      end
+
+      -- Clear previous build diagnostics from all buffers
+      vim.diagnostic.reset(dotnet_build_ns)
+
+      local output_lines = {}
+      local spinner = start_spinner("Building solution")
+
+      vim.fn.jobstart(
+        "dotnet build /property:GenerateFullPaths=true /v:q /clp:NoSummary /clp:ErrorsOnly " .. vim.fn.shellescape(sln),
+        {
+          stdout_buffered = true,
+          on_stdout = function(_, data)
+            if data then
+              for _, line in ipairs(data) do
+                if line ~= "" then
+                  table.insert(output_lines, line)
+                end
+              end
+            end
+          end,
+          on_exit = function(_, code)
+            vim.schedule(function()
+              spinner.stop()
+              set_output_lines(output_lines)
+
+              -- Pattern for: /full/path/File.cs(12,34): error CS1002: message [Proj.csproj]
+              local pattern = "^(.-)%((%d+),(%d+)%)%s*:%s*error%s+([%w]+)%s*:%s*(.*)$"
+
+              local diagnostics_by_file = {}
+
+              for _, line in ipairs(output_lines) do
+                local file, lnum, col, code_id, message = line:match(pattern)
+                if file then
+                  message = message:gsub("%s*%[.-%]%s*$", "")
+
+                  diagnostics_by_file[file] = diagnostics_by_file[file] or {}
+                  table.insert(diagnostics_by_file[file], {
+                    lnum = tonumber(lnum) - 1,
+                    col = tonumber(col) - 1,
+                    severity = vim.diagnostic.severity.ERROR,
+                    message = string.format("[%s] %s", code_id, message),
+                    source = "dotnet build",
+                  })
+                end
+              end
+
+              local total = 0
+              for file, diags in pairs(diagnostics_by_file) do
+                local bufnr = vim.fn.bufadd(file)
+                vim.fn.bufload(bufnr)
+                vim.diagnostic.set(dotnet_build_ns, bufnr, diags)
+                total = total + #diags
+              end
+
+              if code ~= 0 then
+                vim.notify(string.format("Build failed: %d error(s) found", total), vim.log.levels.ERROR)
+              else
+                vim.notify("Build succeeded", vim.log.levels.INFO)
+              end
+            end)
+          end,
+        }
+      )
+    end, { desc = "Dotnet build" })
+
+    vim.keymap.set("n", "<Leader>do", function()
+      local buf = get_or_create_output_buf()
+      vim.cmd("botright split")
+      vim.api.nvim_win_set_buf(0, buf)
+      vim.api.nvim_win_set_height(0, 15)
+    end, { desc = "Dotnet build output" })
+
+    vim.keymap.set("n", "<Leader>dr", function()
+      local sln = dotnetModule.get_roslyn_sln()
+      if not sln then
+        vim.notify("No solution loaded by roslyn_ls yet", vim.log.levels.WARN)
+        return
+      end
+      dotnetModule.run_in_terminal(
+        "dotnet clean " .. vim.fn.shellescape(sln) .. " && dotnet build " .. vim.fn.shellescape(sln)
+      )
+    end, { desc = "Dotnet rebuild" })
+
+    vim.keymap.set("n", "<Leader>dt", function()
+      local sln = dotnetModule.get_roslyn_sln()
+      if not sln then
+        vim.notify("No solution loaded by roslyn_ls yet", vim.log.levels.WARN)
+        return
+      end
+      local test_name = dotnetModule.get_qualified_test_name()
+      if test_name then
+        dotnetModule.run_in_terminal(
+          "dotnet test " .. vim.fn.shellescape(sln) .. ' --filter "FullyQualifiedName~' .. test_name .. '"'
+        )
+      end
+    end, { desc = "Dotnet test (focused test)" })
+
+    vim.keymap.set("n", "<Leader>fd", function()
+      Snacks.picker.diagnostics({
+        severity = vim.diagnostic.severity.ERROR,
+      })
+    end, { desc = "Find error diagnostics" })
+
+    vim.keymap.set("n", "<Leader>fD", function()
+      Snacks.picker.diagnostics()
+    end, { desc = "Find all diagnostics" })
+  end,
+})
 
 ---
 
