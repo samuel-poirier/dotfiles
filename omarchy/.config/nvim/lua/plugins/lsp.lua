@@ -33,44 +33,28 @@ return {
 						["csharp|inlay_hints"] = {
 							csharp_enable_inlay_hints_for_implicit_object_creation = false,
 							csharp_enable_inlay_hints_for_implicit_variable_types = false,
+							csharp_enable_inlay_hints_for_indexer_parameters = false,
 							csharp_enable_inlay_hints_for_lambda_parameter_types = false,
-							csharp_enable_inlay_hints_for_types = false,
-							csharp_enable_inlay_hints_for_other_parameters = false,
-							csharp_suppress_inlay_hints_for_parameters_that_match_argument_name = false,
-							csharp_enable_inlay_hints_for_parameters = false,
 							csharp_enable_inlay_hints_for_literal_parameters = false,
 							csharp_enable_inlay_hints_for_object_creation_parameters = false,
-							csharp_enable_inlay_hints_for_indexer_parameters = false,
+							csharp_enable_inlay_hints_for_other_parameters = false,
+							csharp_enable_inlay_hints_for_parameters = false,
+							csharp_enable_inlay_hints_for_types = false,
+							csharp_suppress_inlay_hints_for_parameters_that_match_argument_name = false,
+							dotnet_enable_inlay_hints_for_indexer_parameters = false,
+							dotnet_enable_inlay_hints_for_literal_parameters = false,
+							dotnet_enable_inlay_hints_for_object_creation_parameters = false,
+							dotnet_enable_inlay_hints_for_other_parameters = false,
+							dotnet_enable_inlay_hints_for_parameters = false,
+							dotnet_suppress_inlay_hints_for_parameters_that_differ_only_by_suffix = false,
+							dotnet_suppress_inlay_hints_for_parameters_that_match_argument_name = false,
+							dotnet_suppress_inlay_hints_for_parameters_that_match_method_intent = false,
 						},
 					},
 					on_init = {
 						function(client)
 							local root_dir = client.config.root_dir
-							vim.bo.errorformat = "%f(%l\\,%c): %t%*[^ ] %m"
-							local dotnetModule = require("../utils/dotnet-module")
-							for entry, type in vim.fs.dir(root_dir) do
-								if
-									type == "file"
-									and entry:match("%.slnx?$")
-									and not vim.tbl_contains(dotnetModule.ignored_solutions, entry)
-								then
-									client:notify("solution/open", {
-										solution = vim.uri_from_fname(vim.fs.joinpath(root_dir, entry)),
-									})
-									return
-								end
-							end
-
-							-- fallback: no acceptable solution found, load csproj files instead
-							local projects = {}
-							for entry, type in vim.fs.dir(root_dir) do
-								if type == "file" and entry:match("%.csproj$") then
-									table.insert(projects, vim.uri_from_fname(vim.fs.joinpath(root_dir, entry)))
-								end
-							end
-							if #projects > 0 then
-								client:notify("project/open", { projects = projects })
-							end
+							require("utils.roslyn-solution").initRoot(root_dir)
 						end,
 					},
 				},
