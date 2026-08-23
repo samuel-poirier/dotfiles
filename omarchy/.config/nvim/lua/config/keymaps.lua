@@ -1,6 +1,7 @@
 -- Keymaps are automatically loaded on the VeryLazy event
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
+local tui = require("../utils/tui-utils")
 
 -- Basic settings
 vim.o.number = true -- Enable line numbers
@@ -106,8 +107,16 @@ map("n", "fs", function()
   Snacks.picker.grep({ cwd = vim.fn.getcwd() })
 end, opts)
 
-opts.desc = "Show buffer diagnostics"
+opts.desc = "Find error diagnostics"
 map("n", "<C-m>", function()
+  Snacks.picker.diagnostics({
+    severity = vim.diagnostic.severity.ERROR,
+    filter = { cwd = true },
+  })
+end, opts)
+
+opts.desc = "Show buffer diagnostics"
+map("n", "<C-A-m>", function()
   Snacks.picker.diagnostics({ filter = { cwd = true } })
 end, opts)
 
@@ -132,8 +141,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
     local dotnet_build_ns = vim.api.nvim_create_namespace("dotnet_build")
 
-    local spinner_frames = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
-
     -- Keep a reference to the output buffer so we can reuse/update it
     local build_output_bufnr = nil
 
@@ -157,56 +164,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
       vim.bo[buf].modifiable = false
     end
 
-    local function open_spinner_win(text)
-      local buf = vim.api.nvim_create_buf(false, true)
-      local width = #text + 4
-      local win = vim.api.nvim_open_win(buf, false, {
-        relative = "editor",
-        anchor = "SE",
-        row = vim.o.lines - 3,
-        col = vim.o.columns - 2,
-        width = width,
-        height = 1,
-        style = "minimal",
-        border = "rounded",
-        noautocmd = true,
-      })
-      vim.wo[win].winhl = "Normal:NormalFloat"
-      return buf, win
-    end
-
-    local function start_spinner(text)
-      local buf, win = open_spinner_win(text .. "  " .. spinner_frames[1])
-      local frame = 1
-
-      local timer = assert(vim.loop.new_timer())
-
-      timer:start(0, 80, function()
-        vim.schedule(function()
-          if not vim.api.nvim_buf_is_valid(buf) then
-            timer:stop()
-            timer:close()
-            return
-          end
-          frame = (frame % #spinner_frames) + 1
-          vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "  " .. text .. "  " .. spinner_frames[frame] })
-        end)
-      end)
-
-      return {
-        stop = function()
-          timer:stop()
-          timer:close()
-          if vim.api.nvim_win_is_valid(win) then
-            vim.api.nvim_win_close(win, true)
-          end
-          if vim.api.nvim_buf_is_valid(buf) then
-            vim.api.nvim_buf_delete(buf, { force = true })
-          end
-        end,
-      }
-    end
-
     vim.keymap.set("n", "<Leader>db", function()
       local sln = dotnetModule.get_roslyn_sln()
       if not sln then
@@ -218,7 +175,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
       vim.diagnostic.reset(dotnet_build_ns)
 
       local output_lines = {}
-      local spinner = start_spinner("Building solution")
+      local spinner = tui.start_spinner("Building solution")
 
       vim.fn.jobstart(
         "dotnet build /property:GenerateFullPaths=true /v:q /clp:NoSummary /clp:ErrorsOnly " .. vim.fn.shellescape(sln),
@@ -309,16 +266,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
         )
       end
     end, { desc = "Dotnet test (focused test)" })
-
-    vim.keymap.set("n", "<Leader>fd", function()
-      Snacks.picker.diagnostics({
-        severity = vim.diagnostic.severity.ERROR,
-      })
-    end, { desc = "Find error diagnostics" })
-
-    vim.keymap.set("n", "<Leader>fD", function()
-      Snacks.picker.diagnostics()
-    end, { desc = "Find all diagnostics" })
   end,
 })
 
