@@ -1,7 +1,5 @@
 local M = {}
 
-M.ignored_solutions = {}
-
 function M.get_qualified_test_name()
   local bufnr = vim.api.nvim_get_current_buf()
   local node = vim.treesitter.get_node()
@@ -62,18 +60,6 @@ function M.run_in_terminal(cmd)
   vim.cmd("botright split | resize 15")
   vim.cmd("terminal " .. cmd)
   vim.cmd("startinsert")
-end
-
-function M.get_roslyn_sln()
-  for _, client in ipairs(vim.lsp.get_clients({ name = "roslyn_ls" })) do
-    -- root_dir is the closest fallback if no explicit tracking exists
-
-    for entry, type in vim.fs.dir(client.root_dir) do
-      if type == "file" and entry:match("%.slnx?$") and not vim.tbl_contains(M.ignored_solutions, entry) then
-        return entry
-      end
-    end
-  end
 end
 
 return M

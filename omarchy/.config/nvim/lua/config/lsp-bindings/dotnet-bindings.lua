@@ -6,31 +6,26 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		if client == nil or client.name ~= "roslyn_ls" then
 			return
 		end
-
+		local roslyn = require("utils.roslyn-solution")
 		vim.api.nvim_create_user_command("RoslynTarget", function(o)
-			require("utils.roslyn-solution").pick({ persist = not o.bang })
+			roslyn.pick({ persist = not o.bang })
 		end, { bang = true, desc = "Pick roslyn_ls target (! = session only)" })
 
 		vim.api.nvim_create_user_command("RoslynTargetClear", function()
-			require("utils.roslyn-solution").clear()
+			roslyn.clear()
 		end, { desc = "Forget this repo's default target" })
 
 		vim.keymap.set("n", "<leader>cs", function()
-			require("utils.roslyn-solution").pick()
+			roslyn.pick()
 		end, { desc = "Roslyn: pick target (default)" })
 
 		vim.keymap.set("n", "<leader>cS", function()
-			require("utils.roslyn-solution").pick({ persist = false })
+			roslyn.pick({ persist = false })
 		end, { desc = "Roslyn: pick target (session)" })
 
 		local dotnetModule = require("utils/dotnet-module")
 
 		local dotnet_build_ns = vim.api.nvim_create_namespace("dotnet_build")
-
-		vim.keymap.set("n", "<Leader>dl", function()
-			local sln = dotnetModule.get_roslyn_sln()
-			vim.notify("Loaded solution: " .. sln, vim.log.levels.INFO)
-		end, { desc = "Show loaded solution" })
 
 		-- Keep a reference to the output buffer so we can reuse/update it
 		local build_output_bufnr = nil
@@ -56,10 +51,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		end
 
 		vim.keymap.set("n", "<Leader>db", function()
-			local sln = dotnetModule.get_roslyn_sln()
+			local sln = roslyn.resolve()
 			if not sln then
-				vim.notify("No solution loaded by roslyn_ls yet", vim.log.levels.WARN)
-				return
+				return vim.notify("No roslyn_ls target selected", vim.log.levels.WARN)
 			end
 
 			-- Clear previous build diagnostics from all buffers
@@ -138,10 +132,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		end, { desc = "Dotnet build output" })
 
 		vim.keymap.set("n", "<Leader>dr", function()
-			local sln = dotnetModule.get_roslyn_sln()
+			local sln = roslyn.resolve()
 			if not sln then
-				vim.notify("No solution loaded by roslyn_ls yet", vim.log.levels.WARN)
-				return
+				return vim.notify("No roslyn_ls target selected", vim.log.levels.WARN)
 			end
 			dotnetModule.run_in_terminal(
 				"dotnet clean " .. vim.fn.shellescape(sln) .. " && dotnet build " .. vim.fn.shellescape(sln)
@@ -149,10 +142,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		end, { desc = "Dotnet rebuild" })
 
 		vim.keymap.set("n", "<Leader>dt", function()
-			local sln = dotnetModule.get_roslyn_sln()
+			local sln = roslyn.resolve()
 			if not sln then
-				vim.notify("No solution loaded by roslyn_ls yet", vim.log.levels.WARN)
-				return
+				return vim.notify("No roslyn_ls target selected", vim.log.levels.WARN)
 			end
 			local test_name = dotnetModule.get_qualified_test_name()
 			if test_name then
