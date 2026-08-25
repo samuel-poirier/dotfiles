@@ -106,17 +106,17 @@ map("n", "fs", function()
   Snacks.picker.grep({ cwd = vim.fn.getcwd() })
 end, opts)
 
-opts.desc = "Find error diagnostics"
+opts.desc = "Show buffer diagnostics"
 map("n", "<C-m>", function()
+  Snacks.picker.diagnostics({ filter = { cwd = true } })
+end, opts)
+
+opts.desc = "Find error diagnostics"
+map("n", "<C-A-m>", function()
   Snacks.picker.diagnostics({
     severity = vim.diagnostic.severity.ERROR,
     filter = { cwd = true },
   })
-end, opts)
-
-opts.desc = "Show buffer diagnostics"
-map("n", "<C-A-m>", function()
-  Snacks.picker.diagnostics({ filter = { cwd = true } })
 end, opts)
 
 require("config/lsp-bindings/dotnet-bindings")
