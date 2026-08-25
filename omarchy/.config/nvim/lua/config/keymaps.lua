@@ -120,6 +120,7 @@ map("n", "<C-A-m>", function()
 end, opts)
 
 require("config/lsp-bindings/dotnet-bindings")
+require("config/lsp-bindings/neotest-bindings")
 
 -- Standard binding onlsp attach
 vim.api.nvim_create_autocmd("LspAttach", {
