@@ -163,12 +163,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		}, ",")
 
 		local function dotnet_diagnostics(target)
-			target = target or vim.g.roslyn_nvim_selected_solution
+			target = target or roslyn.resolve()
 			if not target then
 				return vim.notify("No Roslyn target selected", vim.log.levels.ERROR)
 			end
 
-			vim.notify("Building " .. vim.fs.basename(target) .. "…")
+			local spinner = tui.start_spinner("Building solution" .. vim.fs.basename(target))
 
 			vim.system({
 				"dotnet",
@@ -204,6 +204,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 						vim.cmd("cclose")
 						vim.notify("Build clean")
 					end
+					spinner.stop()
 				end)
 			end)
 		end
