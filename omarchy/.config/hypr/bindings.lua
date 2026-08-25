@@ -9,6 +9,7 @@
 --------------------------------
 
 hl.unbind("SUPER + Return")
+hl.unbind("SUPER + SHIFT + Return")
 hl.unbind("SUPER + SHIFT + S")
 
 hl.bind(
