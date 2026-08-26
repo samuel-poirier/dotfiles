@@ -155,3 +155,8 @@ opts.desc = "Send HTTP Request"
 map("n", "<leader>Rs", kulala.run, opts)
 opts.desc = "Send All HTTP Request"
 map("n", "<leader>Ra", kulala.run_all, opts)
+
+-- Markdown preview
+
+opts.desc = "Toggle Markdown Preview"
+map("n", "<leader>pm", "<cmd>Markview toggle<cr>", opts)
