@@ -22,8 +22,8 @@ return {
             },
           },
         },
-        pyright = {},
         -- Python LSP
+        pyright = {},
         -- dotnet LSP
         roslyn_ls = {
           settings = {

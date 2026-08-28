@@ -12,7 +12,10 @@ return {
         adapters = {
           require("neotest-vstest"),
           require("neotest-go"),
-          require("neotest-python"),
+          require("neotest-python")({
+            pytest_discovery = true,
+            runner = "pytest",
+          }),
         },
       })
     end,
