@@ -136,19 +136,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
       )
     end, { desc = "Dotnet rebuild" })
 
-    vim.keymap.set("n", "<Leader>dt", function()
-      local sln = roslyn.resolve()
-      if not sln then
-        return vim.notify("No roslyn_ls target selected", vim.log.levels.WARN)
-      end
-      local test_name = dotnetModule.get_qualified_test_name()
-      if test_name then
-        dotnetModule.run_in_terminal(
-          "dotnet test " .. vim.fn.shellescape(sln) .. ' --filter "FullyQualifiedName~' .. test_name .. '"'
-        )
-      end
-    end, { desc = "Dotnet test (focused test)" })
-
     local efm = table.concat({
       "%f(%l\\,%c): %trror %m",
       "%f(%l\\,%c): %tarning %m",
