@@ -1,2 +1,6 @@
 require("config/lsp-bindings/dotnet-bindings")
 require("config/lsp-bindings/neotest-bindings")
+require("config/lsp-bindings/dap-bindings")
+require("config/lsp-bindings/dotnet-dap-bindings")
+require("config/lsp-bindings/go-dap-bindings")
+require("config/lsp-bindings/python-dap-bindings")

@@ -10,11 +10,6 @@ return {
     },
   },
 
-  -- Debugger
-  {
-    "mfussenegger/nvim-dap",
-  },
-
   -- Treesitter grammar for C#
   {
     "nvim-treesitter/nvim-treesitter",
