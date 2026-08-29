@@ -221,6 +221,13 @@ end
 
 function M.set(t, persist)
 	vim.g.roslyn_ls_target = t
+
+	-- neotest-vstest reads this global to decide which solution to load. It has
+	-- no .slnf support, so only hand it real solutions.
+	if t:match("%.slnx?$") then
+		vim.g.roslyn_nvim_selected_solution = t
+	end
+
 	if persist then
 		local store = read_store()
 		store[M.root()] = t
