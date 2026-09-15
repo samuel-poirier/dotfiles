@@ -71,6 +71,15 @@ hl.bind("SUPER + SHIFT + L", hl.dsp.window.move({ direction = "right" }), { desc
 -- Move active window to special workspace (scratchpad)
 hl.bind("SUPER + SHIFT + S", hl.dsp.window.move({ workspace = "special:scratchpad" }))
 
+hl.unbind("SUPER + A")
+hl.unbind("SUPER + SHIFT + A")
+hl.unbind("SUPER + D")
+hl.unbind("SUPER + SHIFT + D")
+hl.bind("SUPER + A", hl.dsp.workspace.toggle_special("scratchAlt1"))
+hl.bind("SUPER + SHIFT + A", hl.dsp.window.move({ workspace = "special:scratchAlt1" }))
+hl.bind("SUPER + D", hl.dsp.workspace.toggle_special("scratchAlt2"))
+hl.bind("SUPER + SHIFT + D", hl.dsp.window.move({ workspace = "special:scratchAlt2" }))
+
 hl.bind(
 	"SUPER + M",
 	hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }),
