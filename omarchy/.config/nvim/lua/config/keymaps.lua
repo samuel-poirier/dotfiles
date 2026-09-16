@@ -92,18 +92,23 @@ end, opts)
 vim.keymap.del("n", "<leader>ff")
 opts.desc = "Find files (cwd)"
 map("n", "ff", function()
-  Snacks.picker.files()
+  Snacks.picker.files({ ignored = false, hidden = true })
 end, opts)
 
 vim.keymap.del("n", "<leader>fF")
 opts.desc = "Find files (root)"
 map("n", "fF", function()
-  Snacks.picker.files({ cwd = Snacks.git.get_root() })
+  Snacks.picker.files({ cwd = Snacks.git.get_root(), ignored = true, hidden = true })
 end, opts)
 
 opts.desc = "Grep (cwd)"
 map("n", "fs", function()
-  Snacks.picker.grep({ cwd = vim.fn.getcwd() })
+  Snacks.picker.grep({ cwd = vim.fn.getcwd(), ignored = false, hidden = true })
+end, opts)
+
+opts.desc = "Grep (cwd) - ALL"
+map("n", "fS", function()
+  Snacks.picker.grep({ cwd = vim.fn.getcwd(), ignored = true, hidden = true })
 end, opts)
 
 opts.desc = "Show buffer diagnostics"
