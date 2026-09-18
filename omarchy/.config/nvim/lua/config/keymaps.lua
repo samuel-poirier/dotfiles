@@ -96,7 +96,7 @@ map("n", "ff", function()
 end, opts)
 
 vim.keymap.del("n", "<leader>fF")
-opts.desc = "Find files (root)"
+opts.desc = "Find files (root) - ALL"
 map("n", "fF", function()
   Snacks.picker.files({ cwd = Snacks.git.get_root(), ignored = true, hidden = true })
 end, opts)

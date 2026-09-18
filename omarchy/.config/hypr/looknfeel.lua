@@ -55,6 +55,9 @@ hl.config({
 		inactive_opacity = 1.0,
 		fullscreen_opacity = 1.0,
 	},
+	cursor = {
+		no_hardware_cursors = true,
+	},
 })
 
 hl.window_rule({
