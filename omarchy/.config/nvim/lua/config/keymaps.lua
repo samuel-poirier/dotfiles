@@ -124,6 +124,18 @@ map("n", "<C-A-m>", function()
   })
 end, opts)
 
+-- git bindings
+
+opts.desc = "git merge take left (local)"
+map("n", "<leader>g1", "<cmd>diffg LOCAL<cr>", opts)
+map({ "v", "x" }, "<leader>g1", ":diffg LOCAL<cr>", opts)
+
+opts.desc = "git merge take right (remote)"
+map("n", "<leader>g2", "<cmd>diffg REMOTE<cr>", opts)
+map({ "v", "x" }, "<leader>g2", ":diffg REMOTE<cr>", opts)
+
+-- LSP bindings
+
 require("config/lsp-bindings/lsp-bindings-init")
 
 -- Standard binding onlsp attach
