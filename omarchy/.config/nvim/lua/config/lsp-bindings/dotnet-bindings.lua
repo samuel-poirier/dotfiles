@@ -150,7 +150,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
         return vim.notify("No Roslyn target selected", vim.log.levels.ERROR)
       end
 
-      local spinner = tui.start_spinner("Building solution" .. vim.fs.basename(target))
+      local spinner = tui.start_spinner("Building solution " .. vim.fs.basename(target))
 
       vim.system({
         "dotnet",

@@ -138,33 +138,15 @@ function M.start()
 	end
 
 	-- The first call starts the server; the rest reuse it, since reuse_client
-	-- matches on name + root_dir and both are identical across the loop.
+	-- matches on name + root_dir and both are identical across the loop. The
+	-- target itself is opened by on_init (open_default), which reads M.resolve().
 	local id
+	vim.notify(("roslyn_ls starting %s"):format(vim.fs.basename(t)))
 	for _, buf in ipairs(bufs) do
-		vim.notify(("roslyn_ls starting %s"):format(vim.fs.basename(t)))
 		id = vim.lsp.start(cfg, { bufnr = buf })
 	end
 
-	if id ~= nil then
-		local client = assert(vim.lsp.get_client_by_id(id))
-		vim.notify(("roslyn_ls notifying lsp client to open %s"):format(vim.uri_from_fname(t)))
-		client:notify("solution/open", {
-			solution = vim.uri_from_fname(t),
-		})
-	end
-
 	return id
-end
-
---- Stop, then wait for actual process exit before starting the replacement.
-local function restart(cb, tries)
-	tries = tries or 100
-	if tries == 0 or #vim.lsp.get_clients({ name = "roslyn_ls" }) == 0 then
-		return cb()
-	end
-	vim.defer_fn(function()
-		restart(cb, tries - 1)
-	end, 100)
 end
 
 ------------------------------------------------------------------ loading
@@ -205,6 +187,37 @@ function M.open(client, t)
 	end
 end
 
+--- Called from on_init: open the saved/session target, else guess the way
+--- lspconfig does (a lone solution, then root-level projects).
+function M.open_default(client)
+	local root = client.config.root_dir
+	local t = M.resolve()
+
+	if not t and root then
+		local slns = vim.tbl_filter(function(p)
+			return p:match("%.slnx?$") ~= nil
+		end, M.scan(root))
+		if #slns == 1 then
+			t = slns[1]
+		elseif #slns == 0 then
+			local projects = {}
+			for name, type_ in vim.fs.dir(root) do
+				if type_ == "file" and name:match("%.csproj$") then
+					table.insert(projects, vim.fs.joinpath(root, name))
+				end
+			end
+			if #projects > 0 then
+				return client:notify("project/open", { projects = vim.tbl_map(vim.uri_from_fname, projects) })
+			end
+		end
+	end
+
+	if not t then
+		return vim.notify("roslyn_ls: nothing loaded, pick a target with :RoslynTarget", vim.log.levels.WARN)
+	end
+	M.open(client, t)
+end
+
 ------------------------------------------------------------------ switching
 
 -- Poll rather than vim.wait(): shutting down a large workspace can take
@@ -238,7 +251,11 @@ function M.set(t, persist)
 		("roslyn_ls → %s%s  (loading…)"):format(vim.fs.basename(t), persist and "  [default]" or "  [session]")
 	)
 
-	restart(function()
+	-- Stop the old client so the new one runs on_init and opens the new target.
+	for _, client in ipairs(vim.lsp.get_clients({ name = "roslyn_ls" })) do
+		client:stop()
+	end
+	when_stopped(function()
 		M.start()
 	end)
 end

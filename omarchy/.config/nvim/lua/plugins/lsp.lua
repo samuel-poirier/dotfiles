@@ -52,19 +52,15 @@ return {
               dotnet_suppress_inlay_hints_for_parameters_that_match_method_intent = false,
             },
           },
+          -- This replaces lspconfig's on_init (lists merge by index), which is
+          -- what normally sends solution/open. So we have to open a target here.
           on_init = {
             function(client)
-              local root_dir = client.config.root_dir
-              require("utils.roslyn-solution").initRoot(root_dir)
+              local roslyn = require("utils.roslyn-solution")
+              roslyn.initRoot(client.config.root_dir)
+              roslyn.open_default(client)
             end,
           },
-        },
-        setup = {
-          -- Use a wildcard fallback or explicit setups if you want to alter the 0.12 logic
-          ["*"] = function()
-            -- LazyVim natively handles mapping this block into Neovim 0.12's
-            -- native vim.lsp.config(server, opts) and vim.lsp.enable(server) loop.
-          end,
         },
       },
     },
