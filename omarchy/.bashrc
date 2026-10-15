@@ -15,6 +15,7 @@ alias y='yazicwd'
 alias i='tdl c'
 alias m='hyprmoncfg'
 alias sql='sqlit'
+alias f='nautilus . &>/dev/null &'
 
 export WATCHPACK_POLLING=true
 
